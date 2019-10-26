@@ -5,19 +5,21 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 
 class CrawlerNoticia:
-	def __init__(self, browser = webdriver.Chrome(), url = 'https://diarioarapiraca.com.br/editorias/arapiraca/1'):
+	def __init__(self, browser = webdriver.Chrome(), url = 'https://diarioarapiraca.com.br/editorias/arapiraca'):
 		self.browser = browser
 		self.url = url
 		self.noticias = []
 		self.site = 'diarioarapiraca.com.br'
 
-	def proxima_pagina(self):
-		btn_proximo = self.browser.find_element_by_css_selector('#paginacao > span:nth-child(8) > a')
-		print(btn_proximo.get_attribute('href'))
-		btn_proximo.click()
+	def proxima_pagina(self, page):
+		self.url = 'https://diarioarapiraca.com.br/editorias/arapiraca/' + str(page)
 
-	def get_noticia(self):
-		self.browser.get(self.url)
+	def get_noticia(self, url = ''):
+		if(not url):
+			self.browser.get(self.url)
+		else:
+			self.browser.get(url)
+
 		noticias = self.browser.find_elements_by_css_selector('#noticias > ul > li')
 		
 		for noticia in noticias:
@@ -36,11 +38,19 @@ class CrawlerNoticia:
 			self.noticias.append(objeto_noticia)
 
 	def get_noticias(self, page_quantity):
-		for i in range(page_quantity):
-			time.sleep(10)
+		for i in range(1, page_quantity+1):
+			self.proxima_pagina(i)	
+			time.sleep(4)
 			self.get_noticia()
-			if i > 0 : 
-				self.proxima_pagina()						
+								
+
+	def ler_json(self): 
+		with open('data/noticias.json') as json_file:
+			data = json.load(json_file)
+			for site in data:
+				if site['site'] == self.site: 
+					self.noticias = site['noticias'] 
+					
 
 	def salvar_json(self):
 		with open('data/noticias.json') as json_file:

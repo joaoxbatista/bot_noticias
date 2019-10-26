@@ -4,8 +4,8 @@ from classes.crawler_noticias import CrawlerNoticia
 from classes.gerador_imagens import GeradorImagem
 
 crawler = CrawlerNoticia()
-crawler.url = 'https://diarioarapiraca.com.br/editorias/arapiraca/1'
-crawler.get_noticias(1)
+crawler.url = 'https://diarioarapiraca.com.br/editorias/arapiraca/'
+crawler.get_noticias(4)
 
 crawler.salvar_json()
 
